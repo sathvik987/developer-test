@@ -61,8 +61,24 @@
 }
 
 .products {
-    height: 65vh;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    padding: 1em;
+}
+
+.router-col {
+    height: 68vh;
     overflow: auto;
     display: flex;
     justify-content: center;
+}
+
+
+@media only screen and (max-width : 480px) {
+    .router-col {
+        height: 57vh;
+    }
 }

@@ -59,9 +59,9 @@ class LandingPage extends Component {
                     </Col>
 
                     <Col lg="2" sm="3" xs="12" className="icons-col mt-2">
-                        <FontAwesomeIcon className="favorites cursor-pointer icon" icon={["fa-solid", "heart"]} />
-                        <FontAwesomeIcon className="icon" icon={["fa", "user-circle"]} />
-                        <FontAwesomeIcon className="cursor-pointer icon" icon={["fa-solid", "cart-shopping"]} />
+                        <FontAwesomeIcon className="favorites cursor-pointer icon" icon={["fas", "heart"]} />
+                        <FontAwesomeIcon className="icon" icon={["fas", "user-circle"]} />
+                        <FontAwesomeIcon className="cursor-pointer icon" icon={["fas", "cart-shopping"]} />
                     </Col>
                 </Row>
 
@@ -82,13 +82,16 @@ class LandingPage extends Component {
                     </Col>
 
 
-                    <Col lg="11" sm="11" xs="12" className="products mt-4">
-                        {
-                            filteredProducts.length ? filteredProducts.map((product) => {
-                                return <ProductCard key={product.id} name={product.name}></ProductCard>
-                            }) : <h4>No items found!!</h4>
+                    <Col lg="11" sm="11" xs="11" className="router-col mt-4">
+                        <div className="products mt-3">
+                            {
+                                filteredProducts.length ? filteredProducts.map((product) => {
+                                    return <ProductCard key={product.id} name={product.name} img={product.img}
+                                        description={product.description} price={product.price}></ProductCard>
+                                }) : <h4>No items found!!</h4>
 
-                        }
+                            }
+                        </div>
                     </Col>
 
                 </Row>
