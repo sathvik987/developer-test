@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import SearchBox from "../SearchBox/SearchBox";
 import ProductCard from "../ProductCard/ProductCard";
+import CheckOut from "../CheckOut/CheckOut";
 
 import "./landing-page.css"
 
@@ -16,7 +17,10 @@ class LandingPage extends Component {
         this.state = {
             searchField: "",
             filter: "",
-            allProducts: []
+            allProducts: [],
+            favoriteProducts: [],
+            cart: [],
+            route: "landing-page"
         }
     }
 
@@ -37,6 +41,34 @@ class LandingPage extends Component {
         this.setState({ searchField: event.target.value })
     }
 
+    toggleFavoriteProduct = (productId) => {
+        if (this.state.favoriteProducts.includes(productId)) {
+            this.setState((prevState) => ({
+                favoriteProducts: prevState.favoriteProducts.filter((id) => id !== productId),
+            }));
+        } else {
+            this.setState((prevState) => ({
+                favoriteProducts: [...prevState.favoriteProducts, productId],
+            }));
+        }
+    }
+
+    toggleCart = (product) => {
+        if (this.state.cart.includes(product)) {
+            this.setState((prevState) => ({
+                cart: prevState.cart.filter((p) => p !== product),
+            }));
+        } else {
+            this.setState((prevState) => ({
+                cart: [...prevState.cart, product],
+            }));
+        }
+    }
+
+    changeRoute = (route) => {
+        this.setState({ route: route })
+    }
+
 
     render() {
 
@@ -45,10 +77,49 @@ class LandingPage extends Component {
                 (product.name.toLowerCase().includes(this.state.searchField.toLowerCase()))
         });
 
+        let title;
+        let page;
+        if (this.state.route === "landing-page") {
+            title = <Col lg="8" sm="8" xs="12" className="filter-text mt-4">
+                {this.state.filter ? this.state.filter : "All items"}
+            </Col>
+
+            page = <Col lg="11" sm="11" xs="11" className="router-col mt-4">
+                <div className="products mt-3">
+                    {
+                        filteredProducts.length ? filteredProducts.map((product) => {
+                            return <ProductCard key={product.id} product={product}
+                                favorite={this.state.favoriteProducts.includes(product.id)}
+                                addedToCart={this.state.cart.some(p => p.id === product.id)}
+                                toggleFavoriteProduct={this.toggleFavoriteProduct}
+                                toggleCart={this.toggleCart}>
+                            </ProductCard>
+                        }) : <h4>No items found.</h4>
+
+                    }
+                </div>
+            </Col>
+
+        } else {
+            title = <Col lg="8" sm="8" xs="12" className="filter-text mt-4">
+                <FontAwesomeIcon className="cursor-pointer icon" icon={["fas", "arrow-left"]}
+                    onClick={() => this.changeRoute("landing-page")} /> Checkout
+            </Col>
+            page = <Col lg="11" sm="11" xs="11" className="router-col mt-4">
+                <div className="router-div mt-3">
+                    <CheckOut cart={this.state.cart}></CheckOut>
+                </div>
+            </Col>
+
+        }
+
+
+
+
         return (
             <Container fluid>
                 <Row className="nav mt-4">
-                    <Col lg="2" sm="3" xs="12" className="logo-col cursor-pointer mt-2">
+                    <Col lg="2" sm="3" xs="12" className="logo-col cursor-pointer mt-2" onClick={() => this.changeRoute("landing-page")}>
                         Groceries
                     </Col>
 
@@ -59,9 +130,17 @@ class LandingPage extends Component {
                     </Col>
 
                     <Col lg="2" sm="3" xs="12" className="icons-col mt-2">
-                        <FontAwesomeIcon className="favorites cursor-pointer icon" icon={["fas", "heart"]} />
-                        <FontAwesomeIcon className="icon" icon={["fas", "user-circle"]} />
-                        <FontAwesomeIcon className="cursor-pointer icon" icon={["fas", "cart-shopping"]} />
+                        <div>
+                            <span className="favorites-count">{this.state.favoriteProducts.length}</span>
+                            <FontAwesomeIcon className="favorites icon" icon={["fas", "heart"]} />
+                        </div>
+                        <div>
+                            <FontAwesomeIcon className="icon" icon={["fas", "user-circle"]} />
+                        </div>
+                        <div>
+                            <span className="cart-count">{this.state.cart.length}</span>
+                            <FontAwesomeIcon className="cursor-pointer icon" icon={["fas", "cart-shopping"]} onClick={() => this.changeRoute("checkout-page")} />
+                        </div>
                     </Col>
                 </Row>
 
@@ -77,22 +156,10 @@ class LandingPage extends Component {
                             onClick={() => { this.setState({ filter: "bakery" }) }}>Bakery</Button>
                     </Col>
 
-                    <Col lg="8" sm="8" xs="12" className="filter-text mt-4">
-                        {this.state.filter ? this.state.filter : "All items"}
-                    </Col>
+                    {title}
 
 
-                    <Col lg="11" sm="11" xs="11" className="router-col mt-4">
-                        <div className="products mt-3">
-                            {
-                                filteredProducts.length ? filteredProducts.map((product) => {
-                                    return <ProductCard key={product.id} name={product.name} img={product.img}
-                                        description={product.description} price={product.price}></ProductCard>
-                                }) : <h4>No items found!!</h4>
-
-                            }
-                        </div>
-                    </Col>
+                    {page}
 
                 </Row>
 

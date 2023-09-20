@@ -47,6 +47,14 @@
     justify-content: space-around;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.favorite {
+    color: #dc3545;
+}
+
 @media only screen and (max-width : 480px) {
     .product-card {
         height: 25em;

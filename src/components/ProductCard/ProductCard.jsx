@@ -11,29 +11,43 @@ const ProductCard = (props) => {
 
         <Row className='product-card'>
             <Col lg="6" sm="6" xs="12" className='product-img-col'>
-                <img src={props.img} alt="" className='product-img' />
+                <img src={props.product.img} alt="" className='product-img' />
             </Col>
             <Col lg="6" sm="6" xs="12" className='product-body'>
                 <div className='product-name'>
-                    {props.name}
+                    {props.product.name}
                 </div>
 
                 <div className='product-description'>
-                    {props.description}
+                    {props.product.description}
                 </div>
 
                 <div>
-                    <Badge bg="success" className='product-status'>Available</Badge>
+                    {
+                        props.product.available >= 10 ? <Badge bg="success" className='product-status'>Available</Badge>
+                            : <Badge bg="danger" className='product-status'>Only {props.product.available} left</Badge>
+                    }
                 </div>
 
                 <div className='product-footer'>
                     <span>
-                        {props.price}
+                        {props.product.price}
                     </span>
 
                     <span>
-                        <FontAwesomeIcon icon={["fas", "cart-arrow-down"]} style={{ paddingRight: "1.5em" }} />
-                        <FontAwesomeIcon icon={["far", "heart"]} />
+                        {
+                            props.addedToCart ? <FontAwesomeIcon className='cursor-pointer' icon={["fas", "cart-shopping"]} style={{ paddingRight: "1.5em" }}
+                                onClick={() => { props.toggleCart(props.product) }} /> :
+                                <FontAwesomeIcon className='cursor-pointer' icon={["fas", "cart-arrow-down"]} style={{ paddingRight: "1.5em" }}
+                                    onClick={() => { props.toggleCart(props.product) }} />
+                        }
+
+                        {
+                            props.favorite ? <FontAwesomeIcon className='cursor-pointer favorite' icon={["fas", "heart"]}
+                                onClick={() => { props.toggleFavoriteProduct(props.product.id) }} /> :
+                                <FontAwesomeIcon className='cursor-pointer' icon={["far", "heart"]}
+                                    onClick={() => { props.toggleFavoriteProduct(props.product.id) }} />
+                        }
                     </span>
 
                 </div>
