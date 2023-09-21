@@ -38,7 +38,8 @@ class LandingPage extends Component {
     }
 
     onSearchChange = (event) => {
-        this.setState({ searchField: event.target.value })
+        this.changeRoute("landing-page");
+        this.setState({ searchField: event.target.value });
     }
 
     toggleFavoriteProduct = (productId) => {
@@ -54,15 +55,127 @@ class LandingPage extends Component {
     }
 
     toggleCart = (product) => {
-        if (this.state.cart.includes(product)) {
-            this.setState((prevState) => ({
-                cart: prevState.cart.filter((p) => p !== product),
-            }));
+        if (this.state.cart.filter((p) => p.id === product.id).length) {
+            this.setState((prevState) => {
+                let totalAvailable = 0
+                return {
+                    cart: prevState.cart.filter((p) => {
+                        if (p.id === product.id) {
+                            totalAvailable = p.totalAvailable
+                        }
+                        return p.id !== product.id
+                    }),
+                    allProducts: prevState.allProducts.map((item) => {
+                        if (item.id === product.id) {
+                            return { ...item, available: totalAvailable }
+                        } else {
+                            return item
+                        }
+                    })
+                }
+            });
         } else {
             this.setState((prevState) => ({
-                cart: [...prevState.cart, product],
+                cart: [...prevState.cart, { ...product, quantity: 1, totalAvailable: product.available, available: product.available - 1 }],
+                allProducts: prevState.allProducts.map((item) => {
+                    if (item.id === product.id) {
+                        if (item.available > 0) {
+                            let available = item.available - 1
+                            return { ...item, available: available }
+                        } else {
+                            return item
+                        }
+                    } else {
+                        return item
+                    }
+                })
             }));
         }
+    }
+
+    removeFromCart = (product) => {
+        this.setState((prevState) => {
+            let totalAvailable = 0
+            return {
+                cart: prevState.cart.filter((p) => {
+                    if (p.id === product.id) {
+                        totalAvailable = p.totalAvailable
+                    }
+                    return p.id !== product.id
+                }),
+                allProducts: prevState.allProducts.map((item) => {
+                    if (item.id === product.id) {
+                        return { ...item, available: totalAvailable }
+                    } else {
+                        return item
+                    }
+                })
+            }
+        });
+    }
+
+    increment = (productId) => {
+        this.setState((prevState) => ({
+            cart: prevState.cart.map((item) => {
+                if (item.id === productId) {
+                    if (item.available > 0) {
+                        let available = item.available - 1
+                        let quantity = item.quantity + 1
+                        return { ...item, quantity: quantity, available: available }
+                    } else {
+                        return item
+                    }
+                } else {
+                    return item
+                }
+            }),
+            allProducts: prevState.allProducts.map((item) => {
+                if (item.id === productId) {
+                    if (item.available > 0) {
+                        let available = item.available - 1
+                        return { ...item, available: available }
+                    } else {
+                        return item
+                    }
+                } else {
+                    return item
+                }
+            })
+        }));
+    }
+
+    decrement = (productId) => {
+        this.setState((prevState) => {
+            let decrement = null
+            return {
+                cart: prevState.cart.map((item) => {
+                    if (item.id === productId) {
+                        if (item.quantity > 1) {
+                            decrement = true
+                            let available = item.available + 1
+                            let quantity = item.quantity - 1
+                            return { ...item, quantity: quantity, available: available }
+                        } else {
+                            return item
+                        }
+                    } else {
+                        return item
+                    }
+                }),
+                allProducts: prevState.allProducts.map((item) => {
+                    if (item.id === productId) {
+                        if (decrement) {
+                            let available = item.available + 1
+                            return { ...item, available: available }
+                        } else {
+                            return item
+                        }
+                    } else {
+                        return item
+                    }
+                })
+            }
+        });
     }
 
     changeRoute = (route) => {
@@ -107,7 +220,8 @@ class LandingPage extends Component {
             </Col>
             page = <Col lg="11" sm="11" xs="11" className="router-col mt-4">
                 <div className="router-div mt-3">
-                    <CheckOut cart={this.state.cart}></CheckOut>
+                    <CheckOut cart={this.state.cart} removeFromCart={this.removeFromCart} increment={this.increment}
+                        decrement={this.decrement}></CheckOut>
                 </div>
             </Col>
 
@@ -147,13 +261,13 @@ class LandingPage extends Component {
                 <Row className="products-and-filters mt-3">
                     <Col lg="8" sm="8" xs="12" className="filter-buttons-col">
                         <Button variant="light" size="sm" className="rounded-pill filter-buttons mt-3"
-                            onClick={() => { this.setState({ filter: "" }) }}>All items</Button>
+                            onClick={() => { this.changeRoute("landing-page"); this.setState({ filter: "" }) }}>All items</Button>
                         <Button variant="light" size="sm" className="rounded-pill filter-buttons mt-3"
-                            onClick={() => { this.setState({ filter: "drinks" }) }}>Drinks</Button>
+                            onClick={() => { this.changeRoute("landing-page"); this.setState({ filter: "drinks" }) }}>Drinks</Button>
                         <Button variant="light" size="sm" className="rounded-pill filter-buttons mt-3"
-                            onClick={() => { this.setState({ filter: "fruit" }) }}>Fruit</Button>
+                            onClick={() => { this.changeRoute("landing-page"); this.setState({ filter: "fruit" }) }}>Fruit</Button>
                         <Button variant="light" size="sm" className="rounded-pill filter-buttons mt-3"
-                            onClick={() => { this.setState({ filter: "bakery" }) }}>Bakery</Button>
+                            onClick={() => { this.changeRoute("landing-page"); this.setState({ filter: "bakery" }) }}>Bakery</Button>
                     </Col>
 
                     {title}
