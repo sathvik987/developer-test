@@ -20,6 +20,7 @@ class LandingPage extends Component {
             allProducts: [],
             favoriteProducts: [],
             cart: [],
+            freeOfferProducts: [],
             route: "landing-page"
         }
     }
@@ -31,7 +32,13 @@ class LandingPage extends Component {
     getAllProducts = async () => {
         try {
             let res = await (await fetch("https://uxdlyqjm9i.execute-api.eu-west-1.amazonaws.com/s?category=all")).json();
-            this.setState({ allProducts: res })
+            let freeOfferProducts = [];
+            for (const product of res) {
+                if (product.name === "Coca-Cola" || product.name === "Coffee") {
+                    freeOfferProducts.push(product)
+                }
+            }
+            this.setState({ allProducts: res, freeOfferProducts: freeOfferProducts })
         } catch (error) {
             console.log(error);
         }
@@ -221,7 +228,7 @@ class LandingPage extends Component {
             page = <Col lg="11" sm="11" xs="11" className="router-col mt-4">
                 <div className="router-div mt-3">
                     <CheckOut cart={this.state.cart} removeFromCart={this.removeFromCart} increment={this.increment}
-                        decrement={this.decrement}></CheckOut>
+                        decrement={this.decrement} freeOfferProducts={this.state.freeOfferProducts}></CheckOut>
                 </div>
             </Col>
 

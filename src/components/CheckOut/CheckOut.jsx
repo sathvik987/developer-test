@@ -17,11 +17,30 @@ class CheckOut extends Component {
 
 
     render() {
+        let offers = [];
         let subtotal = 0;
         let discount = 0;
         let total = 0;
         for (const item of this.props.cart) {
             subtotal = subtotal + (Number(item.price.split("£")[1]) * item.quantity)
+            if (item.name === "Coca-Cola" && item.quantity >= 6) {
+                for (const product of this.props.freeOfferProducts) {
+                    if (product.name === "Coca-Cola") {
+                        offers.push(product)
+                        discount = discount + Number(product.price.split("£")[1])
+                        break
+                    }
+                }
+            }
+            if (item.name === "Croissants" && item.quantity >= 3) {
+                for (const product of this.props.freeOfferProducts) {
+                    if (product.name === "Coffee") {
+                        offers.push(product)
+                        discount = discount + Number(product.price.split("£")[1])
+                        break
+                    }
+                }
+            }
         }
         total = subtotal
 
@@ -69,6 +88,37 @@ class CheckOut extends Component {
 
 
                         }) : <h4 className="text-center">No items in the cart.</h4>
+                    }
+
+
+                    {
+                        offers.length ? offers.map((product) => {
+                            return <Row className='cart-product-card' key={product.id}>
+                                <Col lg="1" sm="4" xs="4" className="flex-col">
+                                    <img src={product.img} alt="" className='cart-product-img' />
+                                </Col>
+
+                                <Col lg="5" sm="8" xs="8" className="flex-col cart-product-name">
+                                    {product.name}
+                                </Col>
+
+                                <Col lg="3" sm="4" xs="4" className="quantity-col">
+                                    <Badge bg="info" className='product-status'>Free Offer</Badge>
+                                </Col>
+
+                                <Col lg="2" sm="4" xs="4" className="flex-col">
+                                    <span style={{ textDecoration: "line-through" }}>{product.price}</span>
+                                </Col>
+
+                                <Col lg="1" sm="4" xs="4" className="flex-col remove-col">
+
+                                </Col>
+
+
+                            </Row >
+
+
+                        }) : ""
                     }
 
                 </Row>
