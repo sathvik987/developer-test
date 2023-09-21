@@ -42,7 +42,8 @@ class CheckOut extends Component {
                 }
             }
         }
-        total = subtotal
+        subtotal = subtotal + discount;
+        total = subtotal - discount;
 
         return (
 
